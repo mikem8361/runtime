@@ -415,6 +415,14 @@ PALAPI
 PAL_SetShutdownCallback(
     IN PSHUTDOWN_CALLBACK callback);
 
+typedef bool (*PCREATEDUMP_CALLBACK)(const char** argv);
+
+PALIMPORT
+VOID
+PALAPI
+PAL_SetCreateDumpCallback(
+    IN PCREATEDUMP_CALLBACK callback);
+
 PALIMPORT
 BOOL
 PALAPI

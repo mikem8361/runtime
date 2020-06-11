@@ -211,6 +211,9 @@ static_assert_no_msg(CLR_SEM_MAX_NAMELEN <= MAX_PATH);
 // Function to call during PAL/process shutdown/abort
 Volatile<PSHUTDOWN_CALLBACK> g_shutdownCallback = nullptr;
 
+// Function to call when a core dump needs to be generated (in-proc)
+PCREATEDUMP_CALLBACK g_createdumpCallback = nullptr;
+
 // Crash dump generating program arguments. Initialized in PROCAbortInitialize().
 char* g_argvCreateDump[8] = { nullptr };
 
@@ -3303,47 +3306,54 @@ Function:
 BOOL
 PROCCreateCrashDump(char** argv)
 {
-    // Fork the core dump child process.
-    pid_t childpid = fork();
+    if (g_createdumpCallback == nullptr)
+    {
+        // Fork the core dump child process.
+        pid_t childpid = fork();
 
-    // If error, write an error to trace log and abort
-    if (childpid == -1)
-    {
-        ERROR("PROCCreateCrashDump: fork() FAILED %d (%s)\n", errno, strerror(errno));
-        return false;
-    }
-    else if (childpid == 0)
-    {
-        // Child process
-        if (execve(argv[0], argv, palEnvironment) == -1)
+        // If error, write an error to trace log and abort
+        if (childpid == -1)
         {
-            ERROR("PROCCreateCrashDump: execve() FAILED %d (%s)\n", errno, strerror(errno));
+            ERROR("PROCCreateCrashDump: fork() FAILED %d (%s)\n", errno, strerror(errno));
             return false;
         }
+        else if (childpid == 0)
+        {
+            // Child process
+            if (execve(argv[0], argv, palEnvironment) == -1)
+            {
+                ERROR("PROCCreateCrashDump: execve() FAILED %d (%s)\n", errno, strerror(errno));
+                return false;
+            }
+        }
+        else
+        {
+#if HAVE_PRCTL_H && HAVE_PR_SET_PTRACER
+            // Gives the child process permission to use /proc/<pid>/mem and ptrace
+            if (prctl(PR_SET_PTRACER, childpid, 0, 0, 0) == -1)
+            {
+                // Ignore any error because on some CentOS and OpenSUSE distros, it isn't
+                // supported but createdump works just fine.
+                ERROR("PROCCreateCrashDump: prctl() FAILED %d (%s)\n", errno, strerror(errno));
+            }
+#endif // HAVE_PRCTL_H && HAVE_PR_SET_PTRACER
+            // Parent waits until the child process is done
+            int wstatus = 0;
+            int result = waitpid(childpid, &wstatus, 0);
+            if (result != childpid)
+            {
+                ERROR("PROCCreateCrashDump: waitpid() FAILED result %d wstatus %d errno %d (%s)\n",
+                    result, wstatus, errno, strerror(errno));
+                return false;
+            }
+            return !WIFEXITED(wstatus) || WEXITSTATUS(wstatus) == 0;
+        }
+        return true;
     }
     else
     {
-#if HAVE_PRCTL_H && HAVE_PR_SET_PTRACER
-        // Gives the child process permission to use /proc/<pid>/mem and ptrace
-        if (prctl(PR_SET_PTRACER, childpid, 0, 0, 0) == -1)
-        {
-            // Ignore any error because on some CentOS and OpenSUSE distros, it isn't
-            // supported but createdump works just fine.
-            ERROR("PROCCreateCrashDump: prctl() FAILED %d (%s)\n", errno, strerror(errno));
-        }
-#endif // HAVE_PRCTL_H && HAVE_PR_SET_PTRACER
-        // Parent waits until the child process is done
-        int wstatus = 0;
-        int result = waitpid(childpid, &wstatus, 0);
-        if (result != childpid)
-        {
-            ERROR("PROCCreateCrashDump: waitpid() FAILED result %d wstatus %d errno %d (%s)\n",
-                result, wstatus, errno, strerror(errno));
-            return false;
-        }
-        return !WIFEXITED(wstatus) || WEXITSTATUS(wstatus) == 0;
+        return g_createdumpCallback((const char**)argv);
     }
-    return true;
 }
 
 /*++
@@ -3378,6 +3388,25 @@ PROCAbortInitialize()
         }
     }
     return TRUE;
+}
+
+/*++
+Function:
+  PAL_SetCreateDumpCallback
+
+Abstract:
+  Sets a callback that is executed when the core dump needs to be generated in process.
+
+  NOTE: Currently only one callback can be set at a time.
+--*/
+PALIMPORT
+VOID
+PALAPI
+PAL_SetCreateDumpCallback(
+    IN PCREATEDUMP_CALLBACK callback)
+{
+    _ASSERTE(g_createdumpCallback == nullptr);
+    g_createdumpCallback = callback;
 }
 
 /*++

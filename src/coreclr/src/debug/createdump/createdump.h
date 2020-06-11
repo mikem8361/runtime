@@ -98,4 +98,6 @@ typedef int T_CONTEXT;
 #define MAX_LONGPATH   1024
 #endif
 
+bool CreateDump(const char* argv[]);
+bool CreateDump(const int argc, const char* argv[]);
 bool CreateDump(const char* dumpPathTemplate, int pid, MINIDUMP_TYPE minidumpType);

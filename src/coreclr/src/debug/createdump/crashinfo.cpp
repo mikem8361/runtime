@@ -309,12 +309,7 @@ CrashInfo::EnumerateManagedModules(IXCLRDataProcess* pClrDataProcess)
                 {
                     // If the module file name isn't empty
                     if (wszUnicodeName[0] != 0) {
-                        ArrayHolder<char> pszName = new (std::nothrow) char[MAX_LONGPATH + 1];
-                        if (pszName == nullptr) {
-                            fprintf(stderr, "Allocating module name FAILED\n");
-                            result = false;
-                            break;
-                        }
+                        ArrayHolder<char> pszName = new char[MAX_LONGPATH + 1];
                         sprintf_s(pszName.GetPtr(), MAX_LONGPATH, "%S", (WCHAR*)wszUnicodeName);
                         TRACE(" %s\n", pszName.GetPtr());
 

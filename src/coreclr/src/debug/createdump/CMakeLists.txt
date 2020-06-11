@@ -12,22 +12,22 @@ remove_definitions(-D_UNICODE)
 
 if(CLR_CMAKE_HOST_WIN32)
 
-    set(CREATEDUMP_SOURCES
-        main.cpp
+    set(CREATEDUMP_LIB_SOURCES
+        createdump.cpp
         createdumpwindows.cpp
         createdump.rc
     )
 
-    _add_executable(createdump
-        ${CREATEDUMP_SOURCES}
-    )
-
-    target_link_libraries(createdump
+    set(CREATEDUMP_LIBRARIES
         kernel32.lib
         ${STATIC_MT_CRT_LIB}
         advapi32.lib
         version.lib
         dbghelp.lib
+    )
+
+    set(CREATEDUMP_DEPENDENCIES
+        mscordaccore
     )
 
 else(CLR_CMAKE_HOST_WIN32)
@@ -47,8 +47,8 @@ else(CLR_CMAKE_HOST_WIN32)
 
     add_definitions(-DPAL_STDCPP_COMPAT)
 
-    set(CREATEDUMP_SOURCES
-        main.cpp
+    set(CREATEDUMP_LIB_SOURCES
+        createdump.cpp
         createdumpunix.cpp
         crashinfo.cpp
         threadinfo.cpp
@@ -56,31 +56,58 @@ else(CLR_CMAKE_HOST_WIN32)
         dumpwriter.cpp
     )
 
-if(CLR_CMAKE_HOST_OSX)
-    _add_executable(createdump
-        crashinfomac.cpp
-        threadinfomac.cpp
-        ${CREATEDUMP_SOURCES}
-    )
-else()
-    _add_executable(createdump
-        crashinfounix.cpp
-        threadinfounix.cpp
-        ${CREATEDUMP_SOURCES}
-        ${PAL_REDEFINES_FILE}
-    )
-    add_dependencies(createdump pal_redefines_file)
-endif(CLR_CMAKE_HOST_OSX)
-
-    target_link_libraries(createdump
-        corguids
-        dbgutil
+    set(CREATEDUMP_LIBRARIES
         # share the PAL in the dac module
         mscordaccore
     )
 
-    add_dependencies(createdump mscordaccore)
+    set(CREATEDUMP_DEPENDENCIES
+        mscordaccore
+    )
+
+    if(CLR_CMAKE_HOST_OSX)
+        list(APPEND CREATEDUMP_LIB_SOURCES
+            crashinfomac.cpp
+            threadinfomac.cpp
+        )
+    else()
+        list(APPEND CREATEDUMP_LIB_SOURCES
+            crashinfounix.cpp
+            threadinfounix.cpp
+        )
+        set(CREATEDUMP_SOURCES
+            ${PAL_REDEFINES_FILE}
+        )
+        list(APPEND CREATEDUMP_DEPENDENCIES
+            pal_redefines_file
+        )
+    endif(CLR_CMAKE_HOST_OSX)
 
 endif(CLR_CMAKE_HOST_WIN32)
+
+    # Build the createdump common library
+
+    _add_library(createdump_lib
+        ${CREATEDUMP_LIB_SOURCES}
+    )
+
+    target_link_libraries(createdump_lib
+        corguids
+        dbgutil
+    )
+
+    # Build the createdump executable
+
+    _add_executable(createdump
+        main.cpp
+        ${CREATEDUMP_SOURCES}
+    )
+
+    target_link_libraries(createdump
+        createdump_lib
+        ${CREATEDUMP_LIBRARIES}
+    )
+
+    add_dependencies(createdump ${CREATEDUMP_DEPENDENCIES})
 
 install_clr(TARGETS createdump ADDITIONAL_DESTINATION sharedFramework)

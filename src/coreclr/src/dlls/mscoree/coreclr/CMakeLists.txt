@@ -150,6 +150,12 @@ elseif(CLR_CMAKE_TARGET_SUNOS)
     )
 endif(CLR_CMAKE_TARGET_LINUX)
 
+if(CLR_CMAKE_TARGET_OSX)
+    list(APPEND CORECLR_LIBRARIES
+        createdump_lib
+    )
+endif(CLR_CMAKE_TARGET_OSX)
+
 if(FEATURE_PERFTRACING)
     list(APPEND CORECLR_LIBRARIES
         eventpipe

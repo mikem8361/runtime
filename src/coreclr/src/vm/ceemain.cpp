@@ -247,6 +247,10 @@ bool g_coreclr_embedded = true;
 bool g_coreclr_embedded = false;
 #endif
 
+#if !defined(CROSSGEN_COMPILE) && defined(TARGET_OSX)
+extern bool CreateDump(const char* argv[]);
+#endif
+
 // Remember how the last startup of EE went.
 HRESULT g_EEStartupStatus = S_OK;
 
@@ -627,6 +631,10 @@ void EEStartupHelper()
         extern void ContractRegressionCheck();
         ContractRegressionCheck();
     }
+#endif
+
+#if !defined(CROSSGEN_COMPILE) && defined(TARGET_OSX)
+    PAL_SetCreateDumpCallback(CreateDump);
 #endif
 
     HRESULT hr = S_OK;

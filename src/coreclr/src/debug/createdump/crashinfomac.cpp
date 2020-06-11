@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 #include "createdump.h"
+#include <pthread.h>
 
 bool
 CrashInfo::Initialize()
@@ -24,10 +25,16 @@ CrashInfo::Initialize()
 void
 CrashInfo::CleanupAndResumeProcess()
 {
+    uint64_t current;
+    pthread_threadid_np(pthread_self(), &current);
+
     // Resume all the threads suspended in EnumerateAndSuspendThreads
     for (ThreadInfo* thread : m_threads)
     {
-        ::thread_resume(thread->Port());
+        if (thread->Tid() != current)
+        {
+            ::thread_resume(thread->Port());
+        }
     }
 }
 
@@ -47,6 +54,9 @@ CrashInfo::EnumerateAndSuspendThreads()
         return false;
     }
 
+    uint64_t current;
+    pthread_threadid_np(pthread_self(), &current);
+
     for (int i = 0; i < threadCount; i++)
     {
         thread_identifier_info_data_t tident;
@@ -64,11 +74,14 @@ CrashInfo::EnumerateAndSuspendThreads()
             tid = tident.thread_id;
         }
 
-        result = ::thread_suspend(threadList[i]);
-        if (result != KERN_SUCCESS)
+        if (tid != current)
         {
-            fprintf(stderr, "thread_suspend(%d) FAILED %x %s\n", tid, result, mach_error_string(result));
-            return false;
+            result = ::thread_suspend(threadList[i]);
+            if (result != KERN_SUCCESS)
+            {
+                fprintf(stderr, "thread_suspend(%d) FAILED %x %s\n", tid, result, mach_error_string(result));
+                return false;
+            }
         }
         // Add to the list of threads
         ThreadInfo* thread = new ThreadInfo(*this, tid, threadList[i]);
