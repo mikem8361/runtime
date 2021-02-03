@@ -10,6 +10,7 @@
 #include "ds-server.c"
 #include "ds-eventpipe-protocol.c"
 #include "ds-dump-protocol.c"
+#include "ds-hotreload-protocol.c"
 #include "ds-ipc.c"
 #include "ds-process-protocol.c"
 #include "ds-profiler-protocol.c"

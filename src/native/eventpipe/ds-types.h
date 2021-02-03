@@ -19,6 +19,7 @@ typedef struct _DiagnosticsAttachProfilerCommandPayload DiagnosticsAttachProfile
 typedef struct _DiagnosticsConnectPort DiagnosticsConnectPort;
 typedef struct _DiagnosticsEnvironmentInfoPayload DiagnosticsEnvironmentInfoPayload;
 typedef struct _DiagnosticsGenerateCoreDumpCommandPayload DiagnosticsGenerateCoreDumpCommandPayload;
+typedef struct _DiagnosticsApplyUpdateCommandPayload DiagnosticsApplyUpdateCommandPayload;
 typedef struct _DiagnosticsIpcHeader DiagnosticsIpcHeader;
 typedef struct _DiagnosticsIpcMessage DiagnosticsIpcMessage;
 typedef struct _DiagnosticsListenPort DiagnosticsListenPort;
@@ -43,6 +44,13 @@ typedef enum {
 	// future
 } DiagnosticsDumpCommandId;
 
+// The hot reload command set is 0x04
+typedef enum {
+	DS_HOTRELOAD_COMMANDID_RESERVED = 0x00,
+	DS_HOTRELOAD_COMMANDID_APPLY_UPDATE = 0x01,
+	// future
+} DiagnosticsHotReloadCommandId;
+
 typedef enum {
 	DS_IPC_MAGIC_VERSION_DOTNET_IPC_V1 = 0x01,
 	// FUTURE
@@ -54,6 +62,7 @@ typedef enum {
 	DS_SERVER_COMMANDSET_EVENTPIPE = 0x02,
 	DS_SERVER_COMMANDSET_PROFILER = 0x03,
 	DS_SERVER_COMMANDSET_PROCESS = 0x04,
+	DS_SERVER_COMMANDSET_HOTRELOAD = 0x05,
 	DS_SERVER_COMMANDSET_SERVER = 0xFF
 } DiagnosticsServerCommandSet;
 

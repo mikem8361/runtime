@@ -8,6 +8,7 @@
 #include "ep-rt-coreclr.h"
 #include "ds-profiler-protocol.h"
 #include "ds-dump-protocol.h"
+#include "ds-hotreload-protocol.h"
 
 #undef DS_LOG_ALWAYS_0
 #define DS_LOG_ALWAYS_0(msg) STRESS_LOG0(LF_DIAGNOSTICS_PORT, LL_ALWAYS, msg)
@@ -202,6 +203,42 @@ ds_rt_generate_core_dump (DiagnosticsGenerateCoreDumpCommandPayload *payload)
 				result = DS_IPC_S_OK;
 		}
 #endif
+	}
+	EX_CATCH {}
+	EX_END_CATCH(SwallowAllExceptions);
+	return result;
+}
+
+/*
+* HotReload
+*/
+
+extern BOOL ApplyHotReloadUpdate(
+    LPCWSTR modulePath,
+    INT32 metadataDeltaLength,
+    UINT8* metadataDelta,
+    INT32 ilDeltaLength,
+    UINT8* ilDelta);
+
+static
+ds_ipc_result_t
+ds_rt_apply_update(DiagnosticsApplyUpdateCommandPayload *payload)
+{
+	STATIC_CONTRACT_NOTHROW;
+
+	ds_ipc_result_t result = DS_IPC_E_FAIL;
+	EX_TRY
+	{
+        LPCWSTR modulePath = reinterpret_cast<LPCWSTR>(ds_apply_update_command_payload_get_module_path(payload));
+        INT32 metadataDeltaLength = ds_apply_update_command_payload_get_metadata_delta_length(payload);
+        UINT8* metadataDelta = ds_apply_update_command_payload_get_metadata_delta(payload);
+        INT32 ilDeltaLength = ds_apply_update_command_payload_get_il_delta_length(payload);
+        UINT8* ilDelta = ds_apply_update_command_payload_get_il_delta(payload);
+
+        if (ApplyHotReloadUpdate(modulePath, metadataDeltaLength, metadataDelta, ilDeltaLength, ilDelta))
+        {
+			result = DS_IPC_S_OK;
+        }
 	}
 	EX_CATCH {}
 	EX_END_CATCH(SwallowAllExceptions);

@@ -170,6 +170,19 @@ ds_rt_generate_core_dump (DiagnosticsGenerateCoreDumpCommandPayload *payload)
 }
 
 /*
+* HotReload.
+*/
+
+static
+inline
+ds_ipc_result_t
+ds_rt_apply_update(DiagnosticsApplyUpdateCommandPayload* payload)
+{
+	// TODO: Implement.
+	return DS_IPC_E_NOTSUPPORTED;
+}
+
+/*
  * DiagnosticsIpc.
  */
 

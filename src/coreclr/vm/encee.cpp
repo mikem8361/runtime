@@ -29,7 +29,6 @@ static int g_BreakOnEnCResolveField = -1;
 
 #ifndef DACCESS_COMPILE
 
-
 // Module initialization occurs in two phases: the constructor phase and the Initialize phase.
 //
 // The constructor phase initializes just enough so that Destruct() can be safely called.
@@ -1760,3 +1759,47 @@ PTR_EnCFieldDesc EncApproxFieldDescIterator::NextEnC()
 }
 
 #endif // EnC_SUPPORTED
+
+#ifndef DACCESS_COMPILE
+
+/// <summary>
+/// Diagnostic server IPC hot reload entry point
+/// </summary>
+/// <param name="modulePath"></param>
+/// <param name="metadataDeltaLength"></param>
+/// <param name="metadataDelta"></param>
+/// <param name="ilDeltaLength"></param>
+/// <param name="ilDelta"></param>
+/// <returns></returns>
+BOOL ApplyHotReloadUpdate(
+    LPCWSTR modulePath,
+    INT32 metadataDeltaLength,
+    UINT8* metadataDelta,
+    INT32 ilDeltaLength,
+    UINT8* ilDelta)
+{
+#ifdef EnC_SUPPORTED
+    AppDomain::AssemblyIterator domainAssemblyIterator = SystemDomain::System()->DefaultDomain()->IterateAssembliesEx((AssemblyIterationFlags) (kIncludeLoaded | kIncludeExecution));
+    CollectibleAssemblyHolder<DomainAssembly *> pDomainAssembly;
+    NativeImageInliningIterator inlinerIter;
+    while (domainAssemblyIterator.Next(pDomainAssembly.This()))
+    {
+        _ASSERTE(pDomainAssembly != NULL);
+        _ASSERTE(pDomainAssembly->GetAssembly() != NULL);
+
+        const SString &path = pDomainAssembly->GetFile()->GetPath();
+        if (modulePath == path)
+        {
+            Module* pModule = pDomainAssembly->GetModule();
+            if (pModule->IsEditAndContinueEnabled())
+            {
+                return ((EditAndContinueModule*)pModule)->ApplyEditAndContinue(metadataDeltaLength, metadataDelta, ilDeltaLength, ilDelta) == S_OK;
+            }
+        }
+    }
+#endif
+    return FALSE;
+}
+
+#endif // DACCESS_COMPILE
+

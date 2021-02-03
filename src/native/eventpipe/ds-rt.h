@@ -88,6 +88,14 @@ ds_ipc_result_t
 ds_rt_generate_core_dump (DiagnosticsGenerateCoreDumpCommandPayload *payload);
 
 /*
+* HotReload.
+*/
+
+static
+ds_ipc_result_t
+ds_rt_apply_update(DiagnosticsApplyUpdateCommandPayload* payload);
+
+/*
  * DiagnosticsIpc.
  */
 

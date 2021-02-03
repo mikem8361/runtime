@@ -10,6 +10,7 @@
 #include "ds-process-protocol.h"
 #include "ds-eventpipe-protocol.h"
 #include "ds-dump-protocol.h"
+#include "ds-hotreload-protocol.h"
 #include "ds-profiler-protocol.h"
 #include "ds-rt.h"
 
@@ -156,6 +157,9 @@ EP_RT_DEFINE_THREAD_FUNC (server_thread)
 			break;
 		case DS_SERVER_COMMANDSET_DUMP:
 			ds_dump_protocol_helper_handle_ipc_message (&message, stream);
+			break;
+		case DS_SERVER_COMMANDSET_HOTRELOAD:
+			ds_hotreload_protocol_helper_handle_ipc_message (&message, stream);
 			break;
 		case DS_SERVER_COMMANDSET_PROCESS:
 			ds_process_protocol_helper_handle_ipc_message (&message, stream);
