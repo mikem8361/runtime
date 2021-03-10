@@ -4413,6 +4413,9 @@ void DacDbiInterfaceImpl::GetModuleData(VMPTR_Module vmModule, ModuleInfo * pDat
     {
         pData->fInMemory = pPEAssembly->GetPath().IsEmpty();
     }
+
+    // There has been enc or hot reload edit applied if the metadata import is RW
+    pData->fEncUpdateApplied = pFile->IsMDImportRW();
 }
 
 

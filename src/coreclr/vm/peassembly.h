@@ -340,6 +340,20 @@ public:
         return m_pFallbackBinder;
     }
 
+#ifdef DACCESS_COMPILE
+    BOOL IsMDImportRW()
+    {
+        LIMITED_METHOD_CONTRACT;
+        return m_MDImportIsRW_Debugger_Use_Only;
+    }
+#endif
+};  // class PEFile
+
+
+class PEAssembly : public PEFile
+{
+    VPTR_VTABLE_CLASS(PEAssembly, PEFile)
+
     // ------------------------------------------------------------
     // Creation entry points
     // ------------------------------------------------------------
