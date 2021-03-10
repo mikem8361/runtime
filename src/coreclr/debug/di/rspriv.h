@@ -4395,6 +4395,7 @@ private:
 
     BOOL             m_fDynamic; // Dynamic modules can grow (like Reflection Emit)
     BOOL             m_fInMemory; // In memory modules don't have file-backing.
+    BOOL             m_fEncUpdateApplied; // If true, an ENC or hot reload update has been applied to this module
 
     // Indicates that the module must serialize its metadata in process as part of metadata
     // refresh. This is required for modules updated on the fly by the profiler

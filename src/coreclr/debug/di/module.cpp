@@ -83,6 +83,7 @@ CordbModule::CordbModule(
 
     m_fDynamic  = modInfo.fIsDynamic;
     m_fInMemory = modInfo.fInMemory;
+    m_fEncUpdateApplied = modInfo.fEncUpdateApplied;
     m_vmPEFile = modInfo.vmPEFile;
 
     if (!vmDomainFile.IsNull())
@@ -607,10 +608,10 @@ BOOL CordbModule::IsFileMetaDataValid()
     // For Enc, we'll can use OpenScope(onFile) and it will get converted to Memory when we get an emitter.
     // We're called from before the ModuleLoad callback, so EnC status hasn't been set yet, so
     // EnC will be false.
-    if (m_fDynamic || m_fInMemory || m_fForceMetaDataSerialize)
+    if (m_fDynamic || m_fInMemory || m_fEncUpdateApplied || m_fForceMetaDataSerialize)
     {
-        LOG((LF_CORDB,LL_INFO10000, "CM::IFMV: m_fDynamic=0x%x m_fInMemory=0x%x m_fForceMetaDataSerialize=0x%x\n",
-            m_fDynamic, m_fInMemory, m_fForceMetaDataSerialize));
+        LOG((LF_CORDB,LL_INFO10000, "CM::IFMV: m_fDynamic=%x m_fInMemory=%x m_fEncUpdateApplied=%x m_fForceMetaDataSerialize=%x\n",
+            m_fDynamic, m_fInMemory, m_fEncUpdateApplied, m_fForceMetaDataSerialize));
         fOpenFromFile = false;
     }
 

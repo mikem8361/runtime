@@ -207,6 +207,9 @@ struct MSLAYOUT ModuleInfo
     // This means the module (and pdb) are not in files, and thus the debugger
     // needs to do extra work to retrieve them from the Target's memory.
     BOOL  fInMemory;
+
+    // If true, an ENC or hot reload update has been applied to this module
+    BOOL  fEncUpdateApplied;
 };
 
 // the following two classes track native offsets for local variables and sequence

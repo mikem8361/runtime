@@ -598,6 +598,14 @@ public:
 
         return m_pFallbackLoadContextBinder;
     }
+
+#ifdef DACCESS_COMPILE
+    BOOL IsMDImportRW()
+    {
+        LIMITED_METHOD_CONTRACT;
+        return m_MDImportIsRW_Debugger_Use_Only;
+    }
+#endif
 };  // class PEFile
 
 

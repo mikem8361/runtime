@@ -6050,7 +6050,7 @@ MethodTableBuilder::InitMethodDesc(
     }
     CONTRACTL_END;
 
-    LOG((LF_CORDB, LL_EVERYTHING, "EEC::IMD: pNewMD:0x%x for tok:0x%x (%s::%s)\n",
+    LOG((LF_CLASSLOADER, LL_INFO1000, "EEC::IMD: pNewMD:0x%x for tok:0x%x (%s::%s)\n",
         pNewMD, tok, pszDebugClassName, pszDebugMethodName));
 
     // Now we know the classification we can perform any classification specific initialization.
