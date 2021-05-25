@@ -443,6 +443,16 @@ public:
     }
 };
 
+class CustomAttributePtrRec
+{
+public:
+    enum {
+        COL_CustomAttribute,
+        COL_COUNT,
+        COL_KEY
+    };
+};
+
 class CustomAttributeRec
 {
 public:
@@ -1696,14 +1706,14 @@ public:
     MiniMdTable(NestedClass)    \
     MiniMdTable(GenericParam)     \
     MiniMdTable(MethodSpec)     \
-    MiniMdTable(GenericParamConstraint)
+    MiniMdTable(GenericParamConstraint) \
+    MiniMdTable(CustomAttributePtr)
 
 #ifdef FEATURE_METADATA_EMIT_PORTABLE_PDB
 #define PortablePdbMiniMdTables() \
     /* Dummy tables to fill the gap to 0x30 */ \
-    MiniMdTable(Dummy1)                             /* 0x2D */ \
-    MiniMdTable(Dummy2)                             /* 0x2E */ \
-    MiniMdTable(Dummy3)                             /* 0x2F */ \
+    MiniMdTable(Dummy1)                             /* 0x2E */ \
+    MiniMdTable(Dummy2)                             /* 0x2F */ \
     /* Actual portable PDB tables */ \
     MiniMdTable(Document)                           /* 0x30 */ \
     MiniMdTable(MethodDebugInformation)             /* 0x31 */ \
@@ -1723,12 +1733,12 @@ enum {
 #ifdef FEATURE_METADATA_EMIT_PORTABLE_PDB
     PortablePdbMiniMdTables()
 #endif
-    TBL_COUNT,                              // Highest table.
-    TBL_COUNT_V1 = TBL_NestedClass + 1,    // Highest table in v1.0 database
+    TBL_COUNT,                                  // Highest table.
+    TBL_COUNT_V1 = TBL_NestedClass + 1,         // Highest table in v1.0 database
 #ifndef FEATURE_METADATA_EMIT_PORTABLE_PDB
-    TBL_COUNT_V2 = TBL_GenericParamConstraint + 1 // Highest in v2.0 database
+    TBL_COUNT_V2 = TBL_CustomAttributePtr + 1   // Highest in v2.0 database
 #else
-    TBL_COUNT_V2 = TBL_ImportScope + 1 // Highest in portable PDB database
+    TBL_COUNT_V2 = TBL_ImportScope + 1          // Highest in portable PDB database
 #endif
 };
 #undef MiniMdTable

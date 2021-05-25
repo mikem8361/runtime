@@ -108,7 +108,7 @@
 class VerifyLayoutsMD
 {
     // we have a bunch of arrays with this fixed size, make sure it doesn't change
-    static_assert_no_msg(TBL_COUNT == 45);
+    static_assert_no_msg(TBL_COUNT == 46);
 
 #define USING_ALIAS(typeName, ...)  using typeName = __VA_ARGS__;
 

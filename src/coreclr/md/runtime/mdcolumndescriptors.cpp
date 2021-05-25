@@ -163,11 +163,14 @@ const BYTE CMiniMdBase::s_MethodSpecCol[] = {2,
 const BYTE CMiniMdBase::s_GenericParamConstraintCol[] = {1,
   42,0,2,  64,2,2,
 };
+const BYTE CMiniMdBase::s_CustomAttributePtrCol[] = {1,
+  // BUGBUG what should m_Type be? 0 is a place holder.
+  0,0,2,
+};
 #ifdef FEATURE_METADATA_EMIT_PORTABLE_PDB
 // Dummy descriptors to fill the gap to 0x30
 const BYTE CMiniMdBase::s_Dummy1Col[] = { NULL };
 const BYTE CMiniMdBase::s_Dummy2Col[] = { NULL };
-const BYTE CMiniMdBase::s_Dummy3Col[] = { NULL };
 // Actual portable PDB tables descriptors
 const BYTE CMiniMdBase::s_DocumentCol[] = { 2,
   103,0,2, 102,2,2, 103,4,2, 102,6,2,
@@ -198,7 +201,7 @@ const BYTE CMiniMdBase::s_ImportScopeCol[] = { 2,
 // const BYTE CMiniMdBase::s_CustomDebugInformationCol[] = {};
 #endif // #ifdef FEATURE_METADATA_EMIT_PORTABLE_PDB
 
-const BYTE* const CMiniMdBase::s_TableColumnDescriptors[] = {
+const BYTE* const CMiniMdBase::s_TableColumnDescriptors[TBL_COUNT] = {
 s_ModuleCol,
 s_TypeRefCol,
 s_TypeDefCol,
@@ -244,11 +247,11 @@ s_NestedClassCol,
 s_GenericParamCol,
 s_MethodSpecCol,
 s_GenericParamConstraintCol,
+s_CustomAttributePtrCol,
 #ifdef FEATURE_METADATA_EMIT_PORTABLE_PDB
 // Dummy descriptors to fill the gap to 0x30
 s_Dummy1Col,
 s_Dummy2Col,
-s_Dummy3Col,
 // Actual portable PDB tables descriptors
 s_DocumentCol,
 s_MethodDebugInformationCol,

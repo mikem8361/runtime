@@ -146,11 +146,11 @@ g_TblSizeInfo[MDSizeIndex_Count][TBL_COUNT] =
        0,           // GenericParam
        0,           // MethodSpec
        0,           // GenericParamConstraint
+       0,           // CustomAttributePtr
 #ifdef FEATURE_METADATA_EMIT_PORTABLE_PDB
        /* Dummy tables to fill the gap to 0x30 */
        0,           // Dummy1
        0,           // Dummy2
-       0,           // Dummy3
        /* Actual portable PDB tables */
        0,           // Document
        0,           // MethodDebugInformation
@@ -210,11 +210,11 @@ g_TblSizeInfo[MDSizeIndex_Count][TBL_COUNT] =
        0,       // GenericParam
        0,       // MethodSpec
        0,       // GenericParamConstraint
+       0,       // CustomAttributePtr
 #ifdef FEATURE_METADATA_EMIT_PORTABLE_PDB
        /* Dummy tables to fill the gap to 0x30 */
        0,       // Dummy1
        0,       // Dummy2
-       0,       // Dummy3
        /* Actual portable PDB tables */
        0,       // Document
        0,       // MethodDebugInformation
@@ -284,11 +284,11 @@ const TblIndex g_TblIndex[TBL_COUNT] =
     {(ULONG) -1,        (ULONG) -1,     mdtGenericParam},   // GenericParam
     {(ULONG) -1,        (ULONG) -1,     mdtMethodSpec},     // MethodSpec
     {(ULONG) -1,        (ULONG) -1,     mdtGenericParamConstraint},// GenericParamConstraint
+    {(ULONG) -1,        (ULONG) -1,     (ULONG) -1},        // CustomAttributePtr
 #ifdef FEATURE_METADATA_EMIT_PORTABLE_PDB
     /* Dummy tables to fill the gap to 0x30 */
     {(ULONG)-1,        (ULONG)-1,     (ULONG)-1},           // Dummy1
     {(ULONG)-1,        (ULONG)-1,     (ULONG)-1},           // Dummy2
-    {(ULONG)-1,        (ULONG)-1,     (ULONG)-1},           // Dummy3
     /* Actual portable PDB tables */
     {(ULONG)-1,        (ULONG)-1,     mdtDocument},         // Document
     {(ULONG)-1,        (ULONG)-1,     mdtMethodDebugInformation},// MethodDebugInformation
@@ -324,7 +324,7 @@ ULONG CMiniMdRW::GetTableForToken(      // Table index, or -1.
     // Table number is same as high-byte of token.
     ixTbl = type >> 24;
     // Make sure.
-     _ASSERTE(g_TblIndex[ixTbl].m_Token == type);
+    _ASSERTE(g_TblIndex[ixTbl].m_Token == type);
 
     return ixTbl;
 } // CMiniMdRW::GetTableForToken
@@ -335,7 +335,7 @@ ULONG CMiniMdRW::GetTableForToken(      // Table index, or -1.
 mdToken CMiniMdRW::GetTokenForTable(    // Token type, or -1.
     ULONG       ixTbl)                  // Table index.
 {
-    _ASSERTE(g_TblIndex[ixTbl].m_Token == (ixTbl<<24)  || g_TblIndex[ixTbl].m_Token == (ULONG) -1);
+    _ASSERTE(g_TblIndex[ixTbl].m_Token == (ixTbl<<24) || g_TblIndex[ixTbl].m_Token == (ULONG) -1);
     return g_TblIndex[ixTbl].m_Token;
 } // CMiniMdRW::GetTokenForTable
 
@@ -751,6 +751,8 @@ CMiniMdRW::CMiniMdRW()
     g_PtrTableIxs[TBL_Param].m_ixcol = ParamPtrRec::COL_Param;
     g_PtrTableIxs[TBL_Property].m_ixtbl = TBL_PropertyPtr;
     g_PtrTableIxs[TBL_Property].m_ixcol = PropertyPtrRec::COL_Property;
+    g_PtrTableIxs[TBL_CustomAttribute].m_ixtbl = TBL_CustomAttributePtr;
+    g_PtrTableIxs[TBL_CustomAttribute].m_ixcol = CustomAttributePtrRec::COL_CustomAttribute;
     g_PtrTableIxs[TBL_Event].m_ixtbl = TBL_EventPtr;
     g_PtrTableIxs[TBL_Event].m_ixcol = EventPtrRec::COL_Event;
 
@@ -2813,6 +2815,13 @@ CMiniMdRW::PreSaveFull()
             COMMA_INDEBUG_MD(TRUE)));
         INDEBUG_MD(newParams.Debug_SetTableInfo("TBL_Param", TBL_Param));
 
+        MetaData::TableRW newCustomAttributes;
+        IfFailGo(newCustomAttributes.InitializeEmpty_WithRecordCount(
+            m_TableDefs[TBL_CustomAttribute].m_cbRec,
+            m_Schema.m_cRecs[TBL_CustomAttribute]
+            COMMA_INDEBUG_MD(TRUE)));
+        INDEBUG_MD(newCustomAttributes.Debug_SetTableInfo("TBL_CustomAttribute", TBL_CustomAttribute));
+
         MetaData::TableRW newEvents;
         IfFailGo(newEvents.InitializeEmpty_WithRecordCount(
             m_TableDefs[TBL_Event].m_cbRec,
@@ -2920,6 +2929,27 @@ CMiniMdRW::PreSaveFull()
             }
         }
 
+        if (HasIndirectTable(TBL_CustomAttribute))
+        {
+            for (ridPtr = 1; ridPtr <= m_Schema.m_cRecs[TBL_CustomAttribute]; ++ridPtr)
+            {
+                BYTE * pOldPtr;
+                IfFailGo(m_Tables[TBL_CustomAttributePtr].GetRecord(ridPtr, &pOldPtr));
+                RID ridOld;
+                ridOld = GetCol(TBL_CustomAttributePtr, CustomAttributePtrRec::COL_CustomAttribute, pOldPtr);
+                BYTE * pOld;
+                IfFailGo(m_Tables[TBL_CustomAttribute].GetRecord(ridOld, &pOld));
+                RID ridNew;
+                BYTE * pNew;
+                IfFailGo(newCustomAttributes.AddRecord(&pNew, (UINT32 *)&ridNew));
+                _ASSERTE(ridNew == ridPtr);
+                memcpy(pNew, pOld, m_TableDefs[TBL_CustomAttribute].m_cbRec);
+
+                // Let the caller know of the token change.
+                IfFailGo(MapToken(ridOld, ridNew, mdtCustomAttribute));
+            }
+        }
+
         // Get rid of EventPtr and PropertyPtr table as well
         // Enumerate fields and copy.
         if (HasIndirectTable(TBL_Event))
@@ -2964,7 +2994,6 @@ CMiniMdRW::PreSaveFull()
             }
         }
 
-
         // Replace the old tables with the new, sorted ones.
         if (HasIndirectTable(TBL_Field))
         {
@@ -2994,6 +3023,13 @@ CMiniMdRW::PreSaveFull()
                 &newPropertys,
                 TRUE));     // fCopyData
         }
+        if (HasIndirectTable(TBL_CustomAttribute))
+        {
+            m_Tables[TBL_CustomAttribute].Delete();
+            IfFailGo(m_Tables[TBL_CustomAttribute].InitializeFromTable(
+                &newCustomAttributes,
+                TRUE));     // fCopyData
+        }
         if (HasIndirectTable(TBL_Event))
         {
             m_Tables[TBL_Event].Delete();
@@ -3007,6 +3043,7 @@ CMiniMdRW::PreSaveFull()
         m_Schema.m_cRecs[TBL_MethodPtr] = 0;
         m_Schema.m_cRecs[TBL_ParamPtr] = 0;
         m_Schema.m_cRecs[TBL_PropertyPtr] = 0;
+        m_Schema.m_cRecs[TBL_CustomAttributePtr] = 0;
         m_Schema.m_cRecs[TBL_EventPtr] = 0;
 
         // invalidated the parent look up tables

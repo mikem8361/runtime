@@ -117,6 +117,13 @@
     SCHEMA_TABLE_END(Constant)
 
     //-------------------------------------------------------------------------
+    //CustomAttributePtr
+    SCHEMA_TABLE_START(CustomAttributePtr)
+    SCHEMA_ITEM_NOFIXED()
+    SCHEMA_ITEM_RID(CustomAttributePtr, CustomAttribute, CustomAttribute)
+    SCHEMA_TABLE_END(CustomAttributePtr)
+
+    //-------------------------------------------------------------------------
     //CustomAttribute
     SCHEMA_TABLE_START(CustomAttribute)
     SCHEMA_ITEM_NOFIXED()
