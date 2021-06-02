@@ -1580,6 +1580,13 @@ void CEEInfo::getFieldInfo (CORINFO_RESOLVED_TOKEN * pResolvedToken,
                 fieldAccessor = intrinsicAccessor;
             }
             else
+            if (pField->IsEnCNew())
+            {
+                fieldAccessor = CORINFO_FIELD_STATIC_ADDR_HELPER;
+
+                pResult->helper = CORINFO_HELP_GETSTATICFIELDADDR_ENC;
+            }
+            else
             if (m_pMethodBeingCompiled->IsZapped() || IsCompilingForNGen() ||
                 // Static fields are not pinned in collectible types. We will always access
                 // them using a helper since the address cannot be embeded into the code.

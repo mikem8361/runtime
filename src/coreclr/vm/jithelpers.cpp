@@ -1482,6 +1482,19 @@ HCIMPL2(void*, JIT_GetSharedNonGCStaticBaseDynamicClass, DomainLocalModule *pLoc
 HCIMPLEND
 #include <optdefault.h>
 
+#include <optsmallperfcritical.h>
+HCIMPL2(void*, JIT_GetStaticFieldAddrEnc, Object *obj, FieldDesc* pFD)
+{
+    CONTRACTL {
+        FCALL_CHECK;
+        PRECONDITION(CheckPointer(pFD));
+    } CONTRACTL_END;
+
+    return NULL;
+}
+HCIMPLEND
+#include <optdefault.h>
+
 /*************************************************************/
 // Slow helper to tail call from the fast one
 HCIMPL2(void, JIT_ClassInitDynamicClass_Helper, DomainLocalModule *pLocalModule, DWORD dwDynamicClassDomainID)

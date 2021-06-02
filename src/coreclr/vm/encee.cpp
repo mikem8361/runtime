@@ -1409,7 +1409,8 @@ EnCAddedStaticField *EnCAddedStaticField::Allocate(EnCFieldDesc *pFD)
     }
     CONTRACTL_END;
 
-    AppDomain *pDomain = (AppDomain*) pFD->GetApproxEnclosingMethodTable()->GetDomain();
+    PTR_MethodTable pMT = pFD->GetApproxEnclosingMethodTable();
+    AppDomain *pDomain = (AppDomain*) pMT->GetDomain();
 
     // Compute the size of the fieldData entry
     size_t fieldSize;
@@ -1423,7 +1424,7 @@ EnCAddedStaticField *EnCAddedStaticField::Allocate(EnCFieldDesc *pFD)
 
     // allocate an instance with space for the field data
     EnCAddedStaticField *pEntry = (EnCAddedStaticField *)
-        (void*)pDomain->GetHighFrequencyHeap()->AllocMem(S_SIZE_T(offsetof(EnCAddedStaticField, m_FieldData)) + S_SIZE_T(fieldSize));
+        (void*)pMT->GetLoaderAllocator()->GetHighFrequencyHeap()->AllocMem(S_SIZE_T(offsetof(EnCAddedStaticField, m_FieldData)) + S_SIZE_T(fieldSize));
     pEntry->m_pFieldDesc = pFD;
 
     // Create a static objectref to point to the field contents, except for primitives

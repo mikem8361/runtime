@@ -472,7 +472,7 @@ enum CorInfoHelpFunc
 
     CORINFO_HELP_GETFIELDADDR,
 
-    CORINFO_HELP_GETSTATICFIELDADDR_CONTEXT,    // Helper for context-static fields
+    CORINFO_HELP_GETSTATICFIELDADDR_ENC,        // Helper for ENC added static fields
     CORINFO_HELP_GETSTATICFIELDADDR_TLS,        // Helper for PE TLS fields
 
     // There are a variety of specialized helpers for accessing static fields. The JIT should use
