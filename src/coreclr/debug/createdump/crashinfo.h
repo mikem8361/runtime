@@ -110,7 +110,10 @@ public:
     inline const std::set<MemoryRegion>& ModuleMappings() const { return m_moduleMappings; }
     inline const std::set<MemoryRegion>& OtherMappings() const { return m_otherMappings; }
     inline const std::set<MemoryRegion>& MemoryRegions() const { return m_memoryRegions; }
-#ifndef __APPLE__
+#ifdef __APPLE__
+    bool CachingReadMemory(void* address, void* buffer, size_t size, size_t* read);
+    bool ReadPages(uint64_t address, void* buffer, uint32_t numberOfPages, uint32_t* pagesRead);
+#else
     inline const std::vector<elf_aux_entry>& AuxvEntries() const { return m_auxvEntries; }
     inline size_t GetAuxvSize() const { return m_auxvEntries.size() * sizeof(elf_aux_entry); }
 #endif
@@ -130,6 +133,7 @@ private:
     void VisitModule(MachOModule& module);
     void VisitSegment(MachOModule& module, const segment_command_64& segment);
     void VisitSection(MachOModule& module, const section_64& section);
+    void* ReadCacheBuffer(uint64_t startAddress, uint32_t numberOfPages);
 #else
     bool GetAuxvEntries();
     bool GetDSOInfo();

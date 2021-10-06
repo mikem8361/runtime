@@ -260,26 +260,26 @@ DumpWriter::WriteSegments()
         {
             while (size > 0)
             {
-                size_t bytesToRead = std::min(size, sizeof(m_tempBuffer));
-                size_t read = 0;
+                uint32_t pagesToRead = std::min(size, sizeof(m_tempBuffer)) / PAGE_SIZE;
+                uint32_t pagesRead = 0;
 
-                if (!m_crashInfo.ReadProcessMemory((void*)address, m_tempBuffer, bytesToRead, &read)) {
-                    fprintf(stderr, "ReadProcessMemory(%" PRIA PRIx64 ", %08zx) FAILED\n", address, bytesToRead);
+                if (!m_crashInfo.ReadPages(address, m_tempBuffer, pagesToRead, &pagesRead)) {
+                    fprintf(stderr, "ReadProcessMemory(%" PRIA PRIx64 ", %08x) FAILED\n", address, pagesToRead);
                     return false;
                 }
 
                 // This can happen if the target process dies before createdump is finished
-                if (read == 0) {
-                    fprintf(stderr, "ReadProcessMemory(%" PRIA PRIx64 ", %08zx) returned 0 bytes read\n", address, bytesToRead);
+                if (pagesRead == 0) {
+                    fprintf(stderr, "ReadProcessMemory(%" PRIA PRIx64 ", %08x) returned 0 pages read\n", address, pagesToRead);
                     return false;
                 }
 
-                if (!WriteData(m_tempBuffer, read)) {
+                size_t bytesRead = pagesRead * PAGE_SIZE;
+                if (!WriteData(m_tempBuffer, bytesRead)) {
                     return false;
                 }
-
-                address += read;
-                size -= read;
+                address += bytesRead;
+                size -= bytesRead;
             }
         }
     }

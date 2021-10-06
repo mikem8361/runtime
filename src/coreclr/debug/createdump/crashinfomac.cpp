@@ -337,6 +337,131 @@ CrashInfo::GetMemoryRegionFlags(uint64_t start)
     return PF_R | PF_W | PF_X;
 }
 
+struct MemoryCacheEntry
+{
+private:
+    uint64_t m_startAddress;
+    uint32_t m_numberOfPages;
+    void* m_buffer;
+
+public:
+    MemoryCacheEntry(uint64_t startAddress)
+    {
+        m_startAddress = startAddress;
+        m_numberOfPages = 0;
+        m_buffer = nullptr;
+    }
+
+    MemoryCacheEntry(uint64_t startAddress, uint32_t numberOfPages)
+    {
+        assert((startAddress & ~PAGE_MASK) == 0);
+        assert(numberOfPages > 0);
+        m_startAddress = startAddress;
+        m_numberOfPages = numberOfPages;
+        m_buffer = malloc(PAGE_SIZE * numberOfPages);
+    }
+
+    ~MemoryCacheEntry()
+    {
+        if (m_buffer != nullptr)
+        {
+            free(m_buffer);
+            m_buffer = nullptr;
+        }
+    }
+
+    inline uint64_t StartAddress() const { return m_startAddress; }
+    inline uint32_t NumberOfPages () const { return m_numberOfPages; }
+    inline void* Buffer() const { return m_buffer; }
+};
+
+static bool CacheEntryCompare(const MemoryCacheEntry* lhs, const MemoryCacheEntry* rhs) { return lhs->StartAddress() < rhs->StartAddress(); }
+
+std::set<MemoryCacheEntry*, bool (*)(const MemoryCacheEntry* lhs, const MemoryCacheEntry* rhs)> g_memoryCache(&CacheEntryCompare);
+
+void*
+CrashInfo::ReadCacheBuffer(uint64_t startAddress, uint32_t numberOfPages)
+{
+    assert((startAddress & ~PAGE_MASK) == 0);
+
+    MemoryCacheEntry search(startAddress);
+    const auto& found = g_memoryCache.find(&search);
+    if (found != g_memoryCache.end())
+    {
+        TRACE_VERBOSE("ReadCacheBuffer(%p %d) cache HIT\n", startAddress, numberOfPages);
+        return (*found)->Buffer();
+    }
+    else
+    {
+        MemoryCacheEntry* entry = new MemoryCacheEntry(startAddress, numberOfPages);
+        g_memoryCache.insert(entry);
+
+        uint32_t pagesRead;
+        if (!ReadPages(startAddress, entry->Buffer(), numberOfPages, &pagesRead))
+        {
+            delete entry;
+            return nullptr;
+        }
+        TRACE_VERBOSE("ReadCacheBuffer(%p %d) cache MISS\n", startAddress, numberOfPages);
+        return entry->Buffer();
+    }
+}
+
+bool
+CrashInfo::CachingReadMemory(void* address, void* buffer, size_t size, size_t* read)
+{
+    assert(buffer != nullptr);
+    assert(read != nullptr);
+
+    vm_address_t addressAligned = (vm_address_t)address & ~(PAGE_SIZE - 1);
+    ssize_t offset = (ssize_t)address & (PAGE_SIZE - 1);
+    ssize_t numberOfBytesRead = 0;
+    ssize_t bytesLeft = size;
+
+    while (bytesLeft > 0)
+    {
+        char* data = (char*)ReadCacheBuffer(addressAligned, 1);
+        if (data == nullptr)
+        {
+            break;
+        }
+        ssize_t bytesToCopy = PAGE_SIZE - offset;
+        if (bytesToCopy > bytesLeft)
+        {
+            bytesToCopy = bytesLeft;
+        }
+        memcpy((LPSTR)buffer + numberOfBytesRead, data + offset, bytesToCopy);
+        addressAligned = addressAligned + PAGE_SIZE;
+        numberOfBytesRead += bytesToCopy;
+        bytesLeft -= bytesToCopy;
+        offset = 0;
+    }
+    *read = numberOfBytesRead;
+    return size == 0 || numberOfBytesRead > 0;
+}
+
+//
+// Read raw memory pages
+//
+bool
+CrashInfo::ReadPages(uint64_t address, void* buffer, uint32_t numberOfPages, uint32_t* pagesRead)
+{
+    assert((address & ~PAGE_MASK) == 0);
+    assert(buffer != nullptr);
+    assert(pagesRead != nullptr);
+
+    vm_size_t bytesRead = numberOfPages * PAGE_SIZE;
+    kern_return_t result = ::vm_read_overwrite(Task(), (vm_address_t)address, bytesRead, (vm_address_t)buffer, &bytesRead);
+    if (result != KERN_SUCCESS)
+    {
+        TRACE_VERBOSE("ReadPages(%p %d): vm_read_overwrite failed bytesRead %d from %p: %x %s\n", address, numberOfPages, bytesRead, address, result, mach_error_string(result));
+        *pagesRead = 0;
+        return false;
+    }
+    *pagesRead = bytesRead / PAGE_SIZE;
+    return true;
+}
+
 //
 // Read raw memory
 //
