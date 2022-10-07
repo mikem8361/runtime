@@ -61,6 +61,7 @@ typedef DPTR(class SBuffer) PTR_SBuffer;
 
 class SBuffer
 {
+    friend void PopulateClrDebugHeaders();
   public:
     //--------------------------------------------------------------------
     // Flags and constants

@@ -37,6 +37,7 @@ class Assembly
     friend class AssemblyNative;
     friend class AssemblySpec;
     friend class ClrDataAccess;
+    friend void PopulateClrDebugHeaders();
 
 private:
     Assembly(PEAssembly *pPEAssembly, LoaderAllocator* pLoaderAllocator);

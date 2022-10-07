@@ -184,6 +184,8 @@ using PTR_MethodDescCodeData = DPTR(MethodDescCodeData);
 // It also knows how to get at its IL code (code:IMAGE_COR_ILMETHOD)
 class MethodDesc
 {
+    friend void PopulateClrDebugHeaders();
+
 public:
 
 #ifdef TARGET_64BIT
@@ -2198,6 +2200,7 @@ public:
 class MethodDescChunk
 {
     friend class MethodDesc;
+    friend void PopulateClrDebugHeaders();
 
     enum {
         enum_flag_TokenRangeMask                           = 0x0FFF, // This must equal METHOD_TOKEN_RANGE_MASK calculated higher in this file

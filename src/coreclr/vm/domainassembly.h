@@ -14,6 +14,7 @@
 
 class DomainAssembly final
 {
+    friend void PopulateClrDebugHeaders();
 public:
 
     // ------------------------------------------------------------

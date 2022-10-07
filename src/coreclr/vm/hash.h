@@ -55,6 +55,7 @@ const unsigned int SLOTS_PER_BUCKET = 4;
 typedef DPTR(class Bucket) PTR_Bucket;
 class Bucket
 {
+    friend void PopulateClrDebugHeaders();
 public:
     UPTR m_rgKeys[SLOTS_PER_BUCKET];
     UPTR m_rgValues[SLOTS_PER_BUCKET];
@@ -231,6 +232,7 @@ public:
 
 class HashMap
 {
+    friend void PopulateClrDebugHeaders();
 public:
 
     //@constructor
@@ -552,6 +554,8 @@ struct cdac_data<HashMap>
 //  so we can shift right one bit, and store the result in the hash table
 class PtrHashMap
 {
+    friend void PopulateClrDebugHeaders();
+
     HashMap         m_HashMap;
 
     // key really acts as a hash code. Sanitize it from special values used by the underlying HashMap.

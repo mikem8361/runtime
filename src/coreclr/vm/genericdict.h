@@ -177,6 +177,7 @@ public:
 // The type of dictionaries. This is just an abstraction around an open-ended array
 class Dictionary
 {
+    friend void PopulateClrDebugHeaders();
 private:
     // First N entries are generic instantiations arguments.
     // The rest of the open array are normal pointers (no optional indirection) and may be NULL.

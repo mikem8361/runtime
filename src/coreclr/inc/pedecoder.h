@@ -122,6 +122,7 @@ typedef bool (*PEDecoder_ResourceCallbackFunction)(LPCWSTR lpName, LPCWSTR lpTyp
 
 class PEDecoder
 {
+    friend void PopulateClrDebugHeaders();
   public:
 
     // ------------------------------------------------------------

@@ -817,6 +817,7 @@ protected:
     // Multi-thread safe access to the list of assemblies
     class DomainAssemblyList
     {
+        friend void PopulateClrDebugHeaders();
     private:
         ArrayList m_array;
 #ifdef _DEBUG

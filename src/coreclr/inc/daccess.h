@@ -621,6 +621,8 @@ typedef uintptr_t TADDR;
 // which reflects the host pointer size.
 typedef SIZE_T TSIZE_T;
 
+// So runtime classes can friend this in the debug header
+extern "C" void PopulateClrDebugHeaders();
 
 //
 // The following table contains all the global information that data access needs to begin
@@ -2165,6 +2167,7 @@ typedef const void* PTR_CVOID;
 
 #define VPTR_VTABLE_CLASS(name, base) \
         friend struct _DacGlobals; \
+        friend void PopulateClrDebugHeaders(); \
 public: name(int dummy) : base(dummy) {}
 
 #define VPTR_VTABLE_CLASS_AND_CTOR(name, base) \
@@ -2173,10 +2176,12 @@ public: name(int dummy) : base(dummy) {}
 
 #define VPTR_BASE_CONCRETE_VTABLE_CLASS(name) \
         friend struct _DacGlobals; \
+        friend void PopulateClrDebugHeaders(); \
 public: name(int dummy) {}
 
 #define VPTR_BASE_VTABLE_CLASS(name) \
         friend struct _DacGlobals; \
+        friend void PopulateClrDebugHeaders(); \
 public: name(int dummy) {}
 
 #define VPTR_BASE_VTABLE_CLASS_AND_CTOR(name) \
@@ -2185,6 +2190,7 @@ public: name(int dummy) {}
 
 #define VPTR_ABSTRACT_VTABLE_CLASS(name, base) \
         friend struct _DacGlobals; \
+        friend void PopulateClrDebugHeaders(); \
 public: name(int dummy) : base(dummy) {}
 
 #define VPTR_ABSTRACT_VTABLE_CLASS_AND_CTOR(name, base) \
@@ -2193,12 +2199,20 @@ public: name(int dummy) : base(dummy) {}
 
 #else // TARGET_UNIX
 
-#define VPTR_VTABLE_CLASS(name, base) friend struct _DacGlobals;
+#define VPTR_VTABLE_CLASS(name, base) \
+        friend struct _DacGlobals; \
+        friend void PopulateClrDebugHeaders();
 #define VPTR_VTABLE_CLASS_AND_CTOR(name, base)
-#define VPTR_BASE_CONCRETE_VTABLE_CLASS(name) friend struct _DacGlobals;
-#define VPTR_BASE_VTABLE_CLASS(name) friend struct _DacGlobals;
+#define VPTR_BASE_CONCRETE_VTABLE_CLASS(name) \
+        friend struct _DacGlobals; \
+        friend void PopulateClrDebugHeaders();
+#define VPTR_BASE_VTABLE_CLASS(name) \
+        friend struct _DacGlobals; \
+        friend void PopulateClrDebugHeaders();
 #define VPTR_BASE_VTABLE_CLASS_AND_CTOR(name)
-#define VPTR_ABSTRACT_VTABLE_CLASS(name, base) friend struct _DacGlobals;
+#define VPTR_ABSTRACT_VTABLE_CLASS(name, base) \
+        friend struct _DacGlobals; \
+        friend void PopulateClrDebugHeaders();
 #define VPTR_ABSTRACT_VTABLE_CLASS_AND_CTOR(name, base)
 
 #endif // TARGET_UNIX

@@ -674,6 +674,7 @@ class EEClass // DO NOT CREATE A NEW EEClass USING NEW!
     friend class FieldDesc;
     friend class CheckAsmOffsets;
     friend class ClrDataAccess;
+    friend void PopulateClrDebugHeaders();
 
     /************************************
      *  PUBLIC INSTANCE METHODS
@@ -1885,6 +1886,7 @@ typedef DPTR(ArrayClass) PTR_ArrayClass;
 class ArrayClass : public EEClass
 {
     friend MethodTable* Module::CreateArrayMethodTable(TypeHandle elemTypeHnd, CorElementType arrayKind, unsigned Rank, AllocMemTracker *pamTracker);
+    friend void PopulateClrDebugHeaders();
 
 #ifndef DACCESS_COMPILE
     ArrayClass() { LIMITED_METHOD_CONTRACT; }

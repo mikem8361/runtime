@@ -127,13 +127,13 @@ struct DotNetRuntimeDebugHeader DotNetRuntimeDebugHeader = {};
         ASSERT(currentDebugPos < DebugTypeEntriesArraySize);                     \
     } while(0)
 
-#define MAKE_DEBUG_FIELD_ENTRY(TypeName, FieldName) MAKE_DEBUG_ENTRY(TypeName, FieldName, offsetof(TypeName, FieldName))
+#define MAKE_FIELD_ENTRY(TypeName, FieldName) MAKE_DEBUG_ENTRY(TypeName, FieldName, offsetof(TypeName, FieldName))
 
 #define MAKE_DEFINE_ENTRY(Name, Value) MAKE_DEBUG_ENTRY(Globals, Name, Value)
 
-#define MAKE_SIZE_ENTRY(TypeName) MAKE_DEBUG_ENTRY(TypeName, SIZEOF, sizeof(TypeName))
+#define MAKE_TYPE_ENTRY(TypeName) MAKE_DEBUG_ENTRY(TypeName, SIZEOF, sizeof(TypeName))
 
-#define MAKE_GLOBAL_ENTRY(Name)                                                   \
+#define MAKE_GLOBAL_ADDRESS_ENTRY(Name)                                           \
     do                                                                            \
     {                                                                             \
         s_GlobalEntries[currentGlobalPos] = { #Name, Name };                      \
@@ -149,56 +149,56 @@ extern "C" void PopulateDebugHeaders()
     ZeroMemory(s_DebugEntries, sizeof(s_DebugEntries));
     ZeroMemory(s_GlobalEntries, sizeof(s_GlobalEntries));
 
-    MAKE_SIZE_ENTRY(GcDacVars);
-    MAKE_DEBUG_FIELD_ENTRY(GcDacVars, major_version_number);
-    MAKE_DEBUG_FIELD_ENTRY(GcDacVars, minor_version_number);
-    MAKE_DEBUG_FIELD_ENTRY(GcDacVars, generation_size);
-    MAKE_DEBUG_FIELD_ENTRY(GcDacVars, total_generation_count);
-    MAKE_DEBUG_FIELD_ENTRY(GcDacVars, built_with_svr);
-    MAKE_DEBUG_FIELD_ENTRY(GcDacVars, finalize_queue);
-    MAKE_DEBUG_FIELD_ENTRY(GcDacVars, generation_table);
-    MAKE_DEBUG_FIELD_ENTRY(GcDacVars, ephemeral_heap_segment);
-    MAKE_DEBUG_FIELD_ENTRY(GcDacVars, alloc_allocated);
-    MAKE_DEBUG_FIELD_ENTRY(GcDacVars, n_heaps);
-    MAKE_DEBUG_FIELD_ENTRY(GcDacVars, g_heaps);
+    MAKE_TYPE_ENTRY(GcDacVars);
+    MAKE_FIELD_ENTRY(GcDacVars, major_version_number);
+    MAKE_FIELD_ENTRY(GcDacVars, minor_version_number);
+    MAKE_FIELD_ENTRY(GcDacVars, generation_size);
+    MAKE_FIELD_ENTRY(GcDacVars, total_generation_count);
+    MAKE_FIELD_ENTRY(GcDacVars, built_with_svr);
+    MAKE_FIELD_ENTRY(GcDacVars, finalize_queue);
+    MAKE_FIELD_ENTRY(GcDacVars, generation_table);
+    MAKE_FIELD_ENTRY(GcDacVars, ephemeral_heap_segment);
+    MAKE_FIELD_ENTRY(GcDacVars, alloc_allocated);
+    MAKE_FIELD_ENTRY(GcDacVars, n_heaps);
+    MAKE_FIELD_ENTRY(GcDacVars, g_heaps);
 
-    MAKE_SIZE_ENTRY(dac_gc_heap);
-    MAKE_DEBUG_FIELD_ENTRY(dac_gc_heap, alloc_allocated);
-    MAKE_DEBUG_FIELD_ENTRY(dac_gc_heap, ephemeral_heap_segment);
-    MAKE_DEBUG_FIELD_ENTRY(dac_gc_heap, finalize_queue);
-    MAKE_DEBUG_FIELD_ENTRY(dac_gc_heap, generation_table);
+    MAKE_TYPE_ENTRY(dac_gc_heap);
+    MAKE_FIELD_ENTRY(dac_gc_heap, alloc_allocated);
+    MAKE_FIELD_ENTRY(dac_gc_heap, ephemeral_heap_segment);
+    MAKE_FIELD_ENTRY(dac_gc_heap, finalize_queue);
+    MAKE_FIELD_ENTRY(dac_gc_heap, generation_table);
 
-    MAKE_SIZE_ENTRY(ee_alloc_context);
-    MAKE_DEBUG_FIELD_ENTRY(ee_alloc_context, m_rgbAllocContextBuffer);
+    MAKE_TYPE_ENTRY(ee_alloc_context);
+    MAKE_FIELD_ENTRY(ee_alloc_context, m_rgbAllocContextBuffer);
 
-    MAKE_SIZE_ENTRY(gc_alloc_context);
-    MAKE_DEBUG_FIELD_ENTRY(gc_alloc_context, alloc_ptr);
-    MAKE_DEBUG_FIELD_ENTRY(gc_alloc_context, alloc_limit);
-    MAKE_DEBUG_FIELD_ENTRY(gc_alloc_context, alloc_bytes);
-    MAKE_DEBUG_FIELD_ENTRY(gc_alloc_context, alloc_bytes_uoh);
-    MAKE_DEBUG_FIELD_ENTRY(gc_alloc_context, alloc_count);
+    MAKE_TYPE_ENTRY(gc_alloc_context);
+    MAKE_FIELD_ENTRY(gc_alloc_context, alloc_ptr);
+    MAKE_FIELD_ENTRY(gc_alloc_context, alloc_limit);
+    MAKE_FIELD_ENTRY(gc_alloc_context, alloc_bytes);
+    MAKE_FIELD_ENTRY(gc_alloc_context, alloc_bytes_uoh);
+    MAKE_FIELD_ENTRY(gc_alloc_context, alloc_count);
 
-    MAKE_SIZE_ENTRY(dac_generation);
-    MAKE_DEBUG_FIELD_ENTRY(dac_generation, allocation_context);
-    MAKE_DEBUG_FIELD_ENTRY(dac_generation, start_segment);
-    MAKE_DEBUG_FIELD_ENTRY(dac_generation, allocation_start);
+    MAKE_TYPE_ENTRY(dac_generation);
+    MAKE_FIELD_ENTRY(dac_generation, allocation_context);
+    MAKE_FIELD_ENTRY(dac_generation, start_segment);
+    MAKE_FIELD_ENTRY(dac_generation, allocation_start);
 
-    MAKE_SIZE_ENTRY(dac_heap_segment);
-    MAKE_DEBUG_FIELD_ENTRY(dac_heap_segment, allocated);
-    MAKE_DEBUG_FIELD_ENTRY(dac_heap_segment, committed);
-    MAKE_DEBUG_FIELD_ENTRY(dac_heap_segment, reserved);
-    MAKE_DEBUG_FIELD_ENTRY(dac_heap_segment, used);
-    MAKE_DEBUG_FIELD_ENTRY(dac_heap_segment, mem);
-    MAKE_DEBUG_FIELD_ENTRY(dac_heap_segment, flags);
-    MAKE_DEBUG_FIELD_ENTRY(dac_heap_segment, next);
-    MAKE_DEBUG_FIELD_ENTRY(dac_heap_segment, background_allocated);
-    MAKE_DEBUG_FIELD_ENTRY(dac_heap_segment, heap);
+    MAKE_TYPE_ENTRY(dac_heap_segment);
+    MAKE_FIELD_ENTRY(dac_heap_segment, allocated);
+    MAKE_FIELD_ENTRY(dac_heap_segment, committed);
+    MAKE_FIELD_ENTRY(dac_heap_segment, reserved);
+    MAKE_FIELD_ENTRY(dac_heap_segment, used);
+    MAKE_FIELD_ENTRY(dac_heap_segment, mem);
+    MAKE_FIELD_ENTRY(dac_heap_segment, flags);
+    MAKE_FIELD_ENTRY(dac_heap_segment, next);
+    MAKE_FIELD_ENTRY(dac_heap_segment, background_allocated);
+    MAKE_FIELD_ENTRY(dac_heap_segment, heap);
 
     MAKE_DEFINE_ENTRY(FinalizeExtraSegCount, dac_finalize_queue::ExtraSegCount);
     MAKE_DEFINE_ENTRY(MinObjectSize, MIN_OBJECT_SIZE);
 
-    MAKE_SIZE_ENTRY(ThreadStore);
-    MAKE_DEBUG_FIELD_ENTRY(ThreadStore, m_ThreadList);
+    MAKE_TYPE_ENTRY(ThreadStore);
+    MAKE_FIELD_ENTRY(ThreadStore, m_ThreadList);
 
     MAKE_SIZE_ENTRY(RuntimeThreadLocals);
     MAKE_DEBUG_FIELD_ENTRY(RuntimeThreadLocals, m_pNext);
@@ -207,88 +207,91 @@ extern "C" void PopulateDebugHeaders()
     MAKE_DEBUG_FIELD_ENTRY(RuntimeThreadLocals, m_pThreadStressLog);
     MAKE_DEBUG_FIELD_ENTRY(RuntimeThreadLocals, m_pExInfoStackHead);
 
-    MAKE_SIZE_ENTRY(ExInfo);
-    MAKE_DEBUG_FIELD_ENTRY(ExInfo, m_pPrevExInfo);
-    MAKE_DEBUG_FIELD_ENTRY(ExInfo, m_exception);
+    MAKE_TYPE_ENTRY(ExInfo);
+    MAKE_FIELD_ENTRY(ExInfo, m_pPrevExInfo);
+    MAKE_FIELD_ENTRY(ExInfo, m_exception);
 
-    MAKE_SIZE_ENTRY(MethodTable);
-    MAKE_DEBUG_FIELD_ENTRY(MethodTable, m_uBaseSize);
-    MAKE_DEBUG_FIELD_ENTRY(MethodTable, m_usComponentSize);
-    MAKE_DEBUG_FIELD_ENTRY(MethodTable, m_uFlags);
+    MAKE_TYPE_ENTRY(MethodTable);
+    MAKE_FIELD_ENTRY(MethodTable, m_uBaseSize);
+    MAKE_FIELD_ENTRY(MethodTable, m_usComponentSize);
+    MAKE_FIELD_ENTRY(MethodTable, m_uFlags);
     MAKE_DEBUG_ENTRY(MethodTable, m_pBaseType, offsetof(MethodTable, m_RelatedType) + offsetof(MethodTable::RelatedTypeUnion, m_pBaseType));
     MAKE_DEBUG_ENTRY(MethodTable, m_pRelatedParameterType, offsetof(MethodTable, m_RelatedType) + offsetof(MethodTable::RelatedTypeUnion, m_pRelatedParameterType));
-    MAKE_DEBUG_FIELD_ENTRY(MethodTable, m_VTable);
+    MAKE_FIELD_ENTRY(MethodTable, m_VTable);
 
-    MAKE_SIZE_ENTRY(StressLog);
-    MAKE_DEBUG_FIELD_ENTRY(StressLog, facilitiesToLog);
-    MAKE_DEBUG_FIELD_ENTRY(StressLog, levelToLog);
-    MAKE_DEBUG_FIELD_ENTRY(StressLog, totalChunk);
-    MAKE_DEBUG_FIELD_ENTRY(StressLog, logs);
-    MAKE_DEBUG_FIELD_ENTRY(StressLog, tickFrequency);
-    MAKE_DEBUG_FIELD_ENTRY(StressLog, startTimeStamp);
-    MAKE_DEBUG_FIELD_ENTRY(StressLog, startTime);
-    MAKE_DEBUG_FIELD_ENTRY(StressLog, moduleOffset);
+    MAKE_TYPE_ENTRY(StressLog);
+    MAKE_FIELD_ENTRY(StressLog, facilitiesToLog);
+    MAKE_FIELD_ENTRY(StressLog, levelToLog);
+    MAKE_FIELD_ENTRY(StressLog, totalChunk);
+    MAKE_FIELD_ENTRY(StressLog, logs);
+    MAKE_FIELD_ENTRY(StressLog, tickFrequency);
+    MAKE_FIELD_ENTRY(StressLog, startTimeStamp);
+    MAKE_FIELD_ENTRY(StressLog, startTime);
+    MAKE_FIELD_ENTRY(StressLog, moduleOffset);
 
-    MAKE_SIZE_ENTRY(ThreadStressLog);
-    MAKE_DEBUG_FIELD_ENTRY(ThreadStressLog, next);
-    MAKE_DEBUG_FIELD_ENTRY(ThreadStressLog, threadId);
-    MAKE_DEBUG_FIELD_ENTRY(ThreadStressLog, isDead);
-    MAKE_DEBUG_FIELD_ENTRY(ThreadStressLog, readHasWrapped);
-    MAKE_DEBUG_FIELD_ENTRY(ThreadStressLog, writeHasWrapped);
-    MAKE_DEBUG_FIELD_ENTRY(ThreadStressLog, curPtr);
-    MAKE_DEBUG_FIELD_ENTRY(ThreadStressLog, readPtr);
-    MAKE_DEBUG_FIELD_ENTRY(ThreadStressLog, chunkListHead);
-    MAKE_DEBUG_FIELD_ENTRY(ThreadStressLog, chunkListTail);
-    MAKE_DEBUG_FIELD_ENTRY(ThreadStressLog, curReadChunk);
-    MAKE_DEBUG_FIELD_ENTRY(ThreadStressLog, curWriteChunk);
-    MAKE_DEBUG_FIELD_ENTRY(ThreadStressLog, chunkListLength);
-    MAKE_DEBUG_FIELD_ENTRY(ThreadStressLog, pThread);
-    MAKE_DEBUG_FIELD_ENTRY(ThreadStressLog, origCurPtr);
+    MAKE_TYPE_ENTRY(ThreadStressLog);
+    MAKE_FIELD_ENTRY(ThreadStressLog, next);
+    MAKE_FIELD_ENTRY(ThreadStressLog, threadId);
+    MAKE_FIELD_ENTRY(ThreadStressLog, isDead);
+    MAKE_FIELD_ENTRY(ThreadStressLog, readHasWrapped);
+    MAKE_FIELD_ENTRY(ThreadStressLog, writeHasWrapped);
+    MAKE_FIELD_ENTRY(ThreadStressLog, curPtr);
+    MAKE_FIELD_ENTRY(ThreadStressLog, readPtr);
+    MAKE_FIELD_ENTRY(ThreadStressLog, chunkListHead);
+    MAKE_FIELD_ENTRY(ThreadStressLog, chunkListTail);
+    MAKE_FIELD_ENTRY(ThreadStressLog, curReadChunk);
+    MAKE_FIELD_ENTRY(ThreadStressLog, curWriteChunk);
+    MAKE_FIELD_ENTRY(ThreadStressLog, chunkListLength);
+    MAKE_FIELD_ENTRY(ThreadStressLog, pThread);
+    MAKE_FIELD_ENTRY(ThreadStressLog, origCurPtr);
 
-    MAKE_SIZE_ENTRY(StressLogChunk);
+    MAKE_TYPE_ENTRY(StressLogChunk);
     MAKE_DEFINE_ENTRY(StressLogChunk_ChunkSize, STRESSLOG_CHUNK_SIZE);
-    MAKE_DEBUG_FIELD_ENTRY(StressLogChunk, prev);
-    MAKE_DEBUG_FIELD_ENTRY(StressLogChunk, next);
-    MAKE_DEBUG_FIELD_ENTRY(StressLogChunk, buf);
-    MAKE_DEBUG_FIELD_ENTRY(StressLogChunk, dwSig1);
-    MAKE_DEBUG_FIELD_ENTRY(StressLogChunk, dwSig2);
+    MAKE_FIELD_ENTRY(StressLogChunk, prev);
+    MAKE_FIELD_ENTRY(StressLogChunk, next);
+    MAKE_FIELD_ENTRY(StressLogChunk, buf);
+    MAKE_FIELD_ENTRY(StressLogChunk, dwSig1);
+    MAKE_FIELD_ENTRY(StressLogChunk, dwSig2);
 
-    MAKE_SIZE_ENTRY(StressMsg);
-    MAKE_DEBUG_FIELD_ENTRY(StressMsg, args);
+    MAKE_TYPE_ENTRY(StressMsg);
+    MAKE_FIELD_ENTRY(StressMsg, fmtOffsCArgs);
+    MAKE_FIELD_ENTRY(StressMsg, facility);
+    MAKE_FIELD_ENTRY(StressMsg, timeStamp);
+    MAKE_FIELD_ENTRY(StressMsg, args);
 
-    MAKE_SIZE_ENTRY(RuntimeInstance);
-    MAKE_DEBUG_FIELD_ENTRY(RuntimeInstance, m_pThreadStore);
+    MAKE_TYPE_ENTRY(RuntimeInstance);
+    MAKE_FIELD_ENTRY(RuntimeInstance, m_pThreadStore);
 
-    MAKE_GLOBAL_ENTRY(g_CrashInfoBuffer);
+    MAKE_GLOBAL_ADDRESS_ENTRY(g_CrashInfoBuffer);
 
     RuntimeInstance *g_pTheRuntimeInstance = GetRuntimeInstance();
-    MAKE_GLOBAL_ENTRY(g_pTheRuntimeInstance);
+    MAKE_GLOBAL_ADDRESS_ENTRY(g_pTheRuntimeInstance);
 
-    MAKE_GLOBAL_ENTRY(g_gcDacGlobals);
+    MAKE_GLOBAL_ADDRESS_ENTRY(g_gcDacGlobals);
 
-    MAKE_GLOBAL_ENTRY(g_pFreeObjectEEType);
+    MAKE_GLOBAL_ADDRESS_ENTRY(g_pFreeObjectEEType);
 
     void *g_stressLog = &StressLog::theLog;
-    MAKE_GLOBAL_ENTRY(g_stressLog);
+    MAKE_GLOBAL_ADDRESS_ENTRY(g_stressLog);
 
     // Some DAC functions need to know the module base address, easiest way is with
     // the HANDLE to our module which is the base address.
     HANDLE moduleBaseAddress = PalGetModuleHandleFromPointer((void *)&PopulateDebugHeaders);
-    MAKE_GLOBAL_ENTRY(moduleBaseAddress);
+    MAKE_GLOBAL_ADDRESS_ENTRY(moduleBaseAddress);
 
     DotNetRuntimeDebugHeader.DebugTypeEntries = &s_DebugEntries;
     DotNetRuntimeDebugHeader.GlobalEntries = &s_GlobalEntries;
 
-    static_assert(MethodTable::Flags::EETypeKindMask         == 0x00030000, "The debugging data contract has a hard coded dependency on this value of MethodTable::Flags. If you change this value you must bump major_version_number.");
-    static_assert(MethodTable::Flags::HasFinalizerFlag       == 0x00100000, "The debugging data contract has a hard coded dependency on this value of MethodTable::Flags. If you change this value you must bump major_version_number.");
-    static_assert(MethodTable::Flags::HasPointersFlag        == 0x01000000, "The debugging data contract has a hard coded dependency on this value of MethodTable::Flags. If you change this value you must bump major_version_number.");
-    static_assert(MethodTable::Flags::GenericVarianceFlag    == 0x00800000, "The debugging data contract has a hard coded dependency on this value of MethodTable::Flags. If you change this value you must bump major_version_number.");
-    static_assert(MethodTable::Flags::IsGenericFlag          == 0x02000000, "The debugging data contract has a hard coded dependency on this value of MethodTable::Flags. If you change this value you must bump major_version_number.");
-    static_assert(MethodTable::Flags::ElementTypeMask        == 0x7C000000, "The debugging data contract has a hard coded dependency on this value of MethodTable::Flags. If you change this value you must bump major_version_number.");
-    static_assert(MethodTable::Flags::ElementTypeShift       == 26,         "The debugging data contract has a hard coded dependency on this value of MethodTable::Flags. If you change this value you must bump major_version_number.");
-    static_assert(MethodTable::Flags::HasComponentSizeFlag   == 0x80000000, "The debugging data contract has a hard coded dependency on this value of MethodTable::Flags. If you change this value you must bump major_version_number.");
+    static_assert(MethodTable::Flags::EETypeKindMask        == 0x00030000, "The debugging data contract has a hard coded dependency on this value of MethodTable::Flags. If you change this value you must bump major_version_number.");
+    static_assert(MethodTable::Flags::HasFinalizerFlag      == 0x00100000, "The debugging data contract has a hard coded dependency on this value of MethodTable::Flags. If you change this value you must bump major_version_number.");
+    static_assert(MethodTable::Flags::HasPointersFlag       == 0x00200000, "The debugging data contract has a hard coded dependency on this value of MethodTable::Flags. If you change this value you must bump major_version_number.");
+    static_assert(MethodTable::Flags::GenericVarianceFlag   == 0x00800000, "The debugging data contract has a hard coded dependency on this value of MethodTable::Flags. If you change this value you must bump major_version_number.");
+    static_assert(MethodTable::Flags::IsGenericFlag         == 0x02000000, "The debugging data contract has a hard coded dependency on this value of MethodTable::Flags. If you change this value you must bump major_version_number.");
+    static_assert(MethodTable::Flags::ElementTypeMask       == 0x7C000000, "The debugging data contract has a hard coded dependency on this value of MethodTable::Flags. If you change this value you must bump major_version_number.");
+    static_assert(MethodTable::Flags::ElementTypeShift      == 26,         "The debugging data contract has a hard coded dependency on this value of MethodTable::Flags. If you change this value you must bump major_version_number.");
+    static_assert(MethodTable::Flags::HasComponentSizeFlag  == 0x80000000, "The debugging data contract has a hard coded dependency on this value of MethodTable::Flags. If you change this value you must bump major_version_number.");
 
-    static_assert(MethodTable::Kinds::CanonicalEEType        == 0x00000000, "The debugging data contract has a hard coded dependency on this value of MethodTable::Kinds. If you change this value you must bump major_version_number.");
-    static_assert(MethodTable::Kinds::ParameterizedEEType    == 0x00020000, "The debugging data contract has a hard coded dependency on this value of MethodTable::Kinds. If you change this value you must bump major_version_number.");
-    static_assert(MethodTable::Kinds::GenericTypeDefEEType   == 0x00030000, "The debugging data contract has a hard coded dependency on this value of MethodTable::Kinds. If you change this value you must bump major_version_number.");
+    static_assert(MethodTable::Kinds::CanonicalEEType       == 0x00000000, "The debugging data contract has a hard coded dependency on this value of MethodTable::Kinds. If you change this value you must bump major_version_number.");
+    static_assert(MethodTable::Kinds::ParameterizedEEType   == 0x00020000, "The debugging data contract has a hard coded dependency on this value of MethodTable::Kinds. If you change this value you must bump major_version_number.");
+    static_assert(MethodTable::Kinds::GenericTypeDefEEType  == 0x00030000, "The debugging data contract has a hard coded dependency on this value of MethodTable::Kinds. If you change this value you must bump major_version_number.");
 }
