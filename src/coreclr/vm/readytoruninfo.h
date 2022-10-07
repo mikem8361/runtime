@@ -98,6 +98,7 @@ public:
 class ReadyToRunInfo
 {
     friend class ReadyToRunJitManager;
+    friend void PopulateClrDebugHeaders();
 
     // HotColdMappingLookupTable::LookupMappingForMethod searches m_pHotColdMap, and thus needs access.
     friend class HotColdMappingLookupTable;

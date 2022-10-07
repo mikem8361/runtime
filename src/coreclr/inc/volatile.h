@@ -311,6 +311,8 @@ void VolatileLoadBarrier()
 #endif
 }
 
+extern "C" void PopulateClrDebugHeaders();
+
 //
 // Volatile<T> implements accesses with our volatile semantics over a variable of type T.
 // Wherever you would have used a "volatile Foo" or, equivalently, "Foo volatile", use Volatile<Foo>
@@ -334,6 +336,7 @@ class Volatile
     // To enable the DAC table to correctly handle volatile DAC-ized statics while also being computed at compile time, we need to
     // give the dac table type access to the internal field directly to take the address of it.
     friend struct _DacGlobals;
+    friend void PopulateClrDebugHeaders();
 private:
     //
     // The data which we are treating as volatile

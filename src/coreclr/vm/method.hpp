@@ -198,8 +198,8 @@ class MethodDesc
     friend class MethodImpl;
     friend class CheckAsmOffsets;
     friend class ClrDataAccess;
-
     friend class MethodDescCallSite;
+    friend void PopulateClrDebugHeaders();
 
 public:
 
@@ -2122,6 +2122,7 @@ class MethodDescChunk
 {
     friend class MethodDesc;
     friend class CheckAsmOffsets;
+    friend void PopulateClrDebugHeaders();
 
     enum {
         enum_flag_TokenRangeMask                           = 0x0FFF, // This must equal METHOD_TOKEN_RANGE_MASK calculated higher in this file
