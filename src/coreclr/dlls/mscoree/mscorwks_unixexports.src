@@ -17,3 +17,6 @@ MetaDataGetDispenser
 
 ; cDAC contract descriptor
 DotNetRuntimeContractDescriptor
+
+; Debug Header
+ClrDebugHeader

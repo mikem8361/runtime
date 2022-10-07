@@ -53,6 +53,7 @@ class HashMap;
 typedef DPTR(class Bucket) PTR_Bucket;
 class Bucket
 {
+    friend void PopulateClrDebugHeaders();
 public:
     UPTR m_rgKeys[4];
     UPTR m_rgValues[4];
@@ -229,6 +230,7 @@ public:
 
 class HashMap
 {
+    friend void PopulateClrDebugHeaders();
 public:
 
     //@constructor
@@ -542,6 +544,8 @@ public:
 //  so we can shift right one bit, and store the result in the hash table
 class PtrHashMap
 {
+    friend void PopulateClrDebugHeaders();
+
     HashMap         m_HashMap;
 
     // key really acts as a hash code. Sanitize it from special values used by the underlying HashMap.

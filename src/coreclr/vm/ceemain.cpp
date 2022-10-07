@@ -1086,6 +1086,7 @@ HRESULT EEStartup()
         InitializeJITNotificationTable();
         DacGlobals::Initialize();
 #endif
+        PopulateClrDebugHeaders();
 
         EEStartupHelper();
     }

@@ -94,7 +94,7 @@ typedef DPTR(class PEImage)                PTR_PEImage;
 
 class PEImage final
 {
-
+    friend void PopulateClrDebugHeaders();
 public:
     // ------------------------------------------------------------
     // Public API

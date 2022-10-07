@@ -60,6 +60,7 @@ enum NotificationStatus
 
 class DomainAssembly final
 {
+    friend void PopulateClrDebugHeaders();
 public:
 
     // ------------------------------------------------------------
