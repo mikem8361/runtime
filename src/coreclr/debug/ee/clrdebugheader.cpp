@@ -467,13 +467,9 @@ extern "C" void PopulateClrDebugHeaders()
     MAKE_GLOBAL_ENTRY(ExecutionManager::m_pEEJitManager);
     MAKE_TYPE_ENTRY(EEJitManager);
 
-    MAKE_GLOBAL_ENTRY(ExecutionManager::m_CodeRangeList.m_val);
-    MAKE_TYPE_ENTRY(RangeSection);
-    MAKE_FIELD_ENTRY(RangeSection, LowAddress);
-    MAKE_FIELD_ENTRY(RangeSection, HighAddress);
-    MAKE_FIELD_ENTRY(RangeSection, pjit);
-    MAKE_FIELD_ENTRY(RangeSection, pnext);
-    MAKE_FIELD_ENTRY(RangeSection, pHeapListOrZapModule);
+    MAKE_GLOBAL_ENTRY(ExecutionManager::g_codeRangeMap);
+    MAKE_TYPE_ENTRY(RangeSectionMapData);
+    MAKE_FIELD_ENTRY(RangeSectionMapData, Data);
 
     MAKE_GLOBAL_ENTRY(ExecutionManager::m_pReadyToRunJitManager);
     MAKE_TYPE_ENTRY(ReadyToRunJitManager);
