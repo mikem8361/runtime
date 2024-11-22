@@ -51,6 +51,7 @@ typedef DPTR(class ReadyToRunCoreInfo) PTR_ReadyToRunCoreInfo;
 class ReadyToRunInfo
 {
     friend class ReadyToRunJitManager;
+    friend void PopulateClrDebugHeaders();
 
     PTR_Module                      m_pModule;
     PTR_ModuleBase                  m_pNativeManifestModule;

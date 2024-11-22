@@ -530,6 +530,7 @@ class MethodTable
     friend class EEClass;
     friend class MethodTableBuilder;
     friend class CheckAsmOffsets;
+    friend void PopulateClrDebugHeaders();
 #if defined(DACCESS_COMPILE)
     friend class NativeImageDumper;
 #endif

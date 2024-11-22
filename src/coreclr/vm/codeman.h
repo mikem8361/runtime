@@ -134,6 +134,7 @@ typedef struct _hpRealCodeHdr
 typedef struct _hpCodeHdr
 #endif // USE_INDIRECT_CODEHEADER
 {
+    friend void PopulateClrDebugHeaders();
 public:
     PTR_BYTE            phdrDebugInfo;
 
@@ -1188,6 +1189,7 @@ class ExecutionManager
 {
     friend class CorExternalDataAccess;
     friend struct _DacGlobals;
+    friend void PopulateClrDebugHeaders();
 
 #ifdef DACCESS_COMPILE
     friend class ClrDataAccess;

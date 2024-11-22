@@ -823,6 +823,7 @@ class Thread
     friend class ClrDataAccess;
     friend class ClrDataTask;
 #endif
+    friend void PopulateClrDebugHeaders();
 
     friend BOOL NTGetThreadContext(Thread *pThread, T_CONTEXT *pContext);
     friend BOOL NTSetThreadContext(Thread *pThread, const T_CONTEXT *pContext);
@@ -4548,11 +4549,14 @@ typedef SList<Thread, false, PTR_Thread> ThreadList;
 typedef DPTR(class ThreadStore) PTR_ThreadStore;
 typedef DPTR(class ExceptionTracker) PTR_ExceptionTracker;
 
+extern "C" void PopulateClrDebugHeaders();
+
 class ThreadStore
 {
     friend class Thread;
     friend class ThreadSuspend;
     friend class AppDomain;
+    friend void PopulateClrDebugHeaders();
 #ifdef DACCESS_COMPILE
     friend class ClrDataAccess;
     friend Thread* __stdcall DacGetThread(ULONG32 osThreadID);

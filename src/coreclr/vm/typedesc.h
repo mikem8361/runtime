@@ -33,6 +33,7 @@ typedef DPTR(class TypeDesc) PTR_TypeDesc;
 
 class TypeDesc
 {
+    friend void PopulateClrDebugHeaders();
 public:
 #ifndef DACCESS_COMPILE
     TypeDesc(CorElementType type) {
@@ -217,6 +218,7 @@ class ParamTypeDesc : public TypeDesc {
     friend class TypeDesc;
     friend class JIT_TrialAlloc;
     friend class CheckAsmOffsets;
+    friend void PopulateClrDebugHeaders();
 
 public:
 #ifndef DACCESS_COMPILE

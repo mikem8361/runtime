@@ -83,6 +83,8 @@ typedef DPTR(PEAssembly) PTR_PEAssembly;
 
 class PEAssembly final
 {
+    friend void PopulateClrDebugHeaders();
+
 public:
 
     // ------------------------------------------------------------
