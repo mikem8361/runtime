@@ -53,6 +53,7 @@ class Assembly
     friend class NDirect;
     friend class AssemblyNameNative;
     friend class ClrDataAccess;
+    friend void PopulateClrDebugHeaders();
 
 public:
     Assembly(BaseDomain *pDomain, PEAssembly *pPEAssembly, DebuggerAssemblyControlFlags debuggerFlags, BOOL fIsCollectible);

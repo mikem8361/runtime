@@ -30,6 +30,7 @@ set(CORDBEE_SOURCES_WKS
   shared.cpp
   frameinfo.cpp
   dactable.cpp
+  clrdebugheader.cpp
   ${ARCH_SOURCES_DIR}/primitives.cpp
 )
 

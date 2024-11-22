@@ -128,6 +128,8 @@ struct RCW;
 //
 class Object
 {
+    friend void PopulateClrDebugHeaders();
+
   protected:
     PTR_MethodTable m_pMethTab;
 
@@ -529,6 +531,7 @@ class ArrayBase : public Object
     friend class JIT_TrialAlloc;
     friend class CheckAsmOffsets;
     friend struct _DacGlobals;
+    friend void PopulateClrDebugHeaders();
 
 private:
     // This MUST be the first field, so that it directly follows Object.  This is because
@@ -848,6 +851,7 @@ class StringObject : public Object
     friend class JIT_TrialAlloc;
     friend class CheckAsmOffsets;
     friend class COMString;
+    friend void PopulateClrDebugHeaders();
 
   private:
     DWORD   m_StringLength;
@@ -2043,6 +2047,8 @@ typedef DPTR(StackTraceElement) PTR_StackTraceElement;
 
 class StackTraceArray
 {
+    friend void PopulateClrDebugHeaders();
+
     struct ArrayHeader
     {
         size_t m_size;
@@ -2281,6 +2287,7 @@ typedef DPTR(class ExceptionObject) PTR_ExceptionObject;
 class ExceptionObject : public Object
 {
     friend class CoreLibBinder;
+    friend void PopulateClrDebugHeaders();
 
 public:
     void SetHResult(HRESULT hr)

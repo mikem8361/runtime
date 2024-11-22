@@ -27,6 +27,8 @@
 
 class ArrayListBase
 {
+    friend void PopulateClrDebugHeaders();
+
  public:
 
     enum
