@@ -181,16 +181,22 @@ extern "C" void PopulateClrDebugHeaders()
     MAKE_TYPE_ENTRY(ThreadStore);
     MAKE_FIELD_ENTRY(ThreadStore, m_ThreadList);
 
+    MAKE_TYPE_ENTRY(ee_alloc_context);
+    MAKE_FIELD_ENTRY(ee_alloc_context, m_rgbAllocContextBuffer);
+
     MAKE_TYPE_ENTRY(Thread);
     MAKE_FIELD_ENTRY(Thread, m_Link);
     MAKE_FIELD_ENTRY(Thread, m_ThreadId);
     MAKE_FIELD_ENTRY(Thread, m_OSThreadId);
     MAKE_FIELD_ENTRY(Thread, m_LastThrownObjectHandle);
-    MAKE_FIELD_ENTRY(Thread, m_alloc_context);
+    MAKE_FIELD_ENTRY(Thread, m_pRuntimeThreadLocals);
+
+    MAKE_TYPE_ENTRY(RuntimeThreadLocals);
+    MAKE_FIELD_ENTRY(RuntimeThreadLocals, alloc_context);
 
     MAKE_TYPE_ENTRY(MethodTable);
     MAKE_FIELD_ENTRY(MethodTable, m_dwFlags);
-    MAKE_FIELD_ENTRY(MethodTable, m_wFlags2);
+    MAKE_FIELD_ENTRY(MethodTable, m_dwFlags2);
     MAKE_FIELD_ENTRY(MethodTable, m_BaseSize);
     MAKE_FIELD_ENTRY(MethodTable, m_wToken);
     MAKE_FIELD_ENTRY(MethodTable, m_wNumVirtuals);
