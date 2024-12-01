@@ -87,7 +87,7 @@ struct ClrDebugHeader
     // This counter can be incremented to indicate breaking changes
     // This field must be encoded little endian, regardless of the typical endianness of
     // the machine
-    const uint16_t MajorVersion = 2;
+    const uint16_t MajorVersion = 3;
 
     // This counter can be incremented to indicate back-compatible changes
     // This field must be encoded little endian, regardless of the typical endianness of
@@ -209,7 +209,6 @@ extern "C" void PopulateClrDebugHeaders()
     MAKE_TYPE_ENTRY(MethodDesc);
     MAKE_FIELD_ENTRY(MethodDesc, m_chunkIndex);
     MAKE_FIELD_ENTRY(MethodDesc, m_wFlags);
-    MAKE_FIELD_ENTRY(MethodDesc, m_bFlags2);
     MAKE_FIELD_ENTRY(MethodDesc, m_wFlags3AndTokenRemainder);
     MAKE_FIELD_ENTRY(MethodDesc, m_wSlotNumber);
 
